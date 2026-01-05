@@ -13,11 +13,7 @@ export default function Home() {
 
       <Navbar />
 
-      {/* Hero Section */}
-      <div className="relative z-10">
-        <div className="absolute inset-0 bg-grid-pattern -z-10" />
-        <Hero />
-      </div>
+      <Hero />
 
       <div className="relative z-10 bg-[#020617]">
         <HowItWorks />
@@ -33,9 +29,9 @@ export default function Home() {
         <div className="container mx-auto px-4 text-slate-500 text-sm">
           <p className="mb-4">&copy; 2026 CoreBase. Open Source Backend as a Service.</p>
           <div className="flex justify-center gap-6">
-            <a href="#" className="hover:text-slate-300">GitHub</a>
-            <a href="#" className="hover:text-slate-300">Twitter</a>
-            <a href="#" className="hover:text-slate-300">Discord</a>
+            <a href="#" className="hover:text-slate-300 transition-colors">GitHub</a>
+            <a href="#" className="hover:text-slate-300 transition-colors">Twitter</a>
+            <a href="#" className="hover:text-slate-300 transition-colors">Discord</a>
           </div>
         </div>
       </footer>
