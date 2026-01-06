@@ -1,8 +1,9 @@
-import './bootstrap'; // Must be first (Restart Triggered)
+import './bootstrap';
 import path from 'path';
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import rateLimit from '@fastify/rate-limit';
+import multipart from '@fastify/multipart';
 import { validateEnv } from './utils/env';
 import { logger } from './utils/logger';
 import { pool } from './database/pool';
@@ -35,6 +36,13 @@ async function registerPlugins() {
         max: parseInt(env.RATE_LIMIT_MAX),
         timeWindow: parseInt(env.RATE_LIMIT_WINDOW),
     });
+
+    // Multipart (File Uploads)
+    await app.register(multipart, {
+        limits: {
+            fileSize: 50 * 1024 * 1024, // 50MB
+        }
+    });
 }
 
 // Register routes
@@ -45,6 +53,8 @@ async function registerRoutes() {
     const { tablesRoutes } = await import('./modules/tables/tables.routes');
     const { auditRoutes } = await import('./modules/audit/audit.routes');
     const { aiRoutes } = await import('./modules/ai/ai.routes');
+    const { storageRoutes } = await import('./modules/storage/storage.routes');
+    const { sqlRoutes } = await import('./modules/sql/sql.routes');
 
     // Auth routes
     await app.register(authRoutes, { prefix: '/auth' });
@@ -61,8 +71,14 @@ async function registerRoutes() {
     // Audit routes (protected)
     await app.register(auditRoutes);
 
+    // SQL routes (protected)
+    await app.register(sqlRoutes);
+
     // AI routes (protected)
     await app.register(aiRoutes, { prefix: '/ai' });
+
+    // Storage routes (protected & public)
+    await app.register(storageRoutes);
 
     // Users routes (Admin/Protected)
     const { usersRoutes } = await import('./modules/users/users.routes');
