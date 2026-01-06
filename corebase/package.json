@@ -4,10 +4,13 @@
   "description": "Backend-as-a-Service platform - Self-hostable with auto-generated APIs",
   "private": true,
   "workspaces": [
+    "apps/*",
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace=@corebase/api",
+    "dev": "npm run dev --workspaces --if-present",
+    "dev:api": "npm run dev --workspace=@corebase/api",
+    "dev:web": "npm run dev --workspace=@corebase/landing",
     "build": "npm run build --workspaces",
     "test": "npm run test --workspaces",
     "migrate": "node scripts/migrate.js",

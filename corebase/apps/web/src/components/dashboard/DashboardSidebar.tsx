@@ -35,6 +35,7 @@ export function DashboardSidebar() {
     const projectNav = projectId ? [
         { name: "Overview", href: `/dashboard/projects/${projectId}`, icon: LayoutDashboard },
         { name: "Database", href: `/dashboard/projects/${projectId}/database`, icon: Database },
+        { name: "SQL Editor", href: `/dashboard/projects/${projectId}/sql`, icon: Layers },
         { name: "Auth & Users", href: `/dashboard/projects/${projectId}/auth`, icon: User },
         { name: "Storage", href: `/dashboard/projects/${projectId}/storage`, icon: HardDrive },
         { name: "Functions", href: `/dashboard/projects/${projectId}/functions`, icon: Zap },
