@@ -9,13 +9,13 @@ import { CTA } from "@/components/sections/CTA";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#020617] text-slate-50 relative selection:bg-blue-500/30">
+    <main className="min-h-screen bg-white text-slate-900 relative selection:bg-blue-500/30">
 
       <Navbar />
 
       <Hero />
 
-      <div className="relative z-10 bg-[#020617]">
+      <div className="relative z-10 bg-white">
         <HowItWorks />
         <div id="features"><Features /></div>
         <Testimonials />
@@ -25,13 +25,13 @@ export default function Home() {
       </div>
 
       {/* Footer */}
-      <footer className="py-12 border-t border-white/5 bg-[#020617] text-center">
+      <footer className="py-12 border-t border-slate-200 bg-white text-center">
         <div className="container mx-auto px-4 text-slate-500 text-sm">
           <p className="mb-4">&copy; 2026 CoreBase. Open Source Backend as a Service.</p>
           <div className="flex justify-center gap-6">
-            <a href="#" className="hover:text-slate-300 transition-colors">GitHub</a>
-            <a href="#" className="hover:text-slate-300 transition-colors">Twitter</a>
-            <a href="#" className="hover:text-slate-300 transition-colors">Discord</a>
+            <a href="#" className="hover:text-slate-900 transition-colors">GitHub</a>
+            <a href="#" className="hover:text-slate-900 transition-colors">Twitter</a>
+            <a href="#" className="hover:text-slate-900 transition-colors">Discord</a>
           </div>
         </div>
       </footer>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useParams } from "next/navigation";
 import { MessageSquare, X, Send, Bot, User, Loader2, Sparkles, Minimize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -25,6 +26,8 @@ export function ChatWidget() {
     ]);
     const [inputValue, setInputValue] = useState("");
     const [isTyping, setIsTyping] = useState(false);
+    const params = useParams();
+    const projectId = params?.id as string | undefined;
     const scrollRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -64,18 +67,41 @@ export function ChatWidget() {
         setInputValue("");
         setIsTyping(true);
 
-        // Simulate AI Processing time based on query length
-        setTimeout(() => {
-            const responseText = findResponse(userMsg.content);
+        try {
+            const token = localStorage.getItem("token");
+            // Call Backend AI
+            const res = await fetch("http://localhost:4000/ai/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    message: userMsg.content,
+                    projectId // Pass context
+                })
+            });
+
+            const data = await res.json();
+
             const aiMsg: Message = {
                 id: (Date.now() + 1).toString(),
                 role: "assistant",
-                content: responseText,
+                content: res.ok ? data.response : "Sorry, I'm having trouble connecting to the AI brain right now.",
                 timestamp: new Date()
             };
             setMessages(prev => [...prev, aiMsg]);
+        } catch (err) {
+            const errorMsg: Message = {
+                id: (Date.now() + 1).toString(),
+                role: "assistant",
+                content: "Network error. Please try again.",
+                timestamp: new Date()
+            };
+            setMessages(prev => [...prev, errorMsg]);
+        } finally {
             setIsTyping(false);
-        }, 1000);
+        }
     };
 
     return (

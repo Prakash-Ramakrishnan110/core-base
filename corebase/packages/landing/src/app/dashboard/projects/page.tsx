@@ -130,7 +130,7 @@ export default function ProjectsListPage() {
                     <h1 className="text-3xl font-bold text-slate-900">Your Projects</h1>
                     <p className="text-slate-500">Select a project to manage its database and keys.</p>
                 </div>
-                <Button onClick={() => setIsCreateOpen(true)} className="bg-blue-600 hover:bg-blue-700 gap-2 text-white">
+                <Button onClick={() => setIsCreateOpen(true)} className="bg-blue-600 hover:bg-blue-700 gap-2 text-white shadow-md shadow-blue-600/20">
                     <Plus className="w-4 h-4" /> New Project
                 </Button>
             </div>
@@ -187,35 +187,34 @@ export default function ProjectsListPage() {
 
             {/* Create Project Modal */}
             <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                <DialogContent>
+                <DialogContent className="bg-white border-slate-200">
                     <DialogHeader>
-                        <DialogTitle>Create New Project</DialogTitle>
+                        <DialogTitle className="text-slate-900">Create New Project</DialogTitle>
                     </DialogHeader>
                     <form onSubmit={handleCreateProject} className="space-y-4">
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-300">Project Name</label>
-                            <input
+                            <label className="text-sm font-medium text-slate-700">Project Name</label>
+                            <Input
                                 autoFocus
                                 type="text"
                                 placeholder="e.g. My Awesome App"
                                 value={formData.name}
                                 onChange={e => setFormData({ ...formData, name: e.target.value })}
-                                className="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 outline-none"
                                 required
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-300">Description (Optional)</label>
+                            <label className="text-sm font-medium text-slate-700">Description (Optional)</label>
                             <textarea
                                 placeholder="What is this project about?"
                                 value={formData.description}
                                 onChange={e => setFormData({ ...formData, description: e.target.value })}
-                                className="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 outline-none resize-none h-24"
+                                className="flex min-h-[80px] w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-slate-900 resize-none"
                             />
                         </div>
                         <DialogFooter>
-                            <Button type="button" variant="ghost" onClick={() => setIsCreateOpen(false)} className="text-slate-400">Cancel</Button>
-                            <Button type="submit" className="bg-blue-600 hover:bg-blue-500" disabled={createLoading}>
+                            <Button type="button" variant="ghost" onClick={() => setIsCreateOpen(false)} className="text-slate-600 hover:text-slate-900 hover:bg-slate-100">Cancel</Button>
+                            <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white" disabled={createLoading}>
                                 {createLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                                 Create Project
                             </Button>
@@ -226,28 +225,28 @@ export default function ProjectsListPage() {
 
             {/* Delete Confirmation Modal */}
             <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
-                <DialogContent>
+                <DialogContent className="bg-white border-slate-200">
                     <DialogHeader>
-                        <DialogTitle className="text-red-500 flex items-center gap-2">
+                        <DialogTitle className="text-red-600 flex items-center gap-2">
                             <AlertTriangle className="w-5 h-5" /> Delete Project?
                         </DialogTitle>
                     </DialogHeader>
                     <div className="space-y-4 py-4">
-                        <p className="text-slate-300 text-sm">
-                            This action cannot be undone. This will permanently delete <span className="font-bold text-white">{projectToDelete?.name}</span>?
+                        <p className="text-slate-600 text-sm">
+                            This action cannot be undone. This will permanently delete <span className="font-bold text-slate-900">{projectToDelete?.name}</span>?
                         </p>
                         <div className="space-y-2">
                             <label className="text-xs uppercase font-bold text-slate-500">Type "DELETE" to confirm</label>
                             <Input
                                 value={deleteConfirmation}
                                 onChange={e => setDeleteConfirmation(e.target.value)}
-                                className="bg-red-950/20 border-red-500/30 text-white placeholder:text-red-500/30 focus:ring-red-500"
+                                className="bg-red-50 border-red-200 text-red-900 placeholder:text-red-400 focus:ring-red-500 border-red-200"
                                 placeholder="DELETE"
                             />
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button variant="ghost" onClick={() => setIsDeleteOpen(false)}>Cancel</Button>
+                        <Button variant="ghost" onClick={() => setIsDeleteOpen(false)} className="text-slate-600">Cancel</Button>
                         <Button
                             variant="destructive"
                             onClick={handleDeleteProject}

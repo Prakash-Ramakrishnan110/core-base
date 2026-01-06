@@ -51,10 +51,10 @@ const features = [
 
 export function Features() {
     return (
-        <section className="py-32 relative overflow-hidden">
+        <section className="py-20 relative overflow-hidden">
             {/* Background Decor */}
-            <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-blue-600/10 blur-[100px] rounded-full -z-10 translate-y-[-50%]" />
-            <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-purple-600/10 blur-[100px] rounded-full -z-10" />
+            <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-blue-100/50 blur-[100px] rounded-full -z-10 translate-y-[-50%]" />
+            <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-purple-100/50 blur-[100px] rounded-full -z-10" />
 
             <div className="container mx-auto px-4">
                 <motion.div
@@ -62,13 +62,13 @@ export function Features() {
                     whileInView="visible"
                     viewport={{ once: true, margin: "-100px" }}
                     variants={staggerContainer}
-                    className="text-center mb-20"
+                    className="text-center mb-12"
                 >
-                    <motion.h2 variants={fadeInUp} className="text-3xl md:text-5xl font-bold mb-6">
+                    <motion.h2 variants={fadeInUp} className="text-3xl md:text-5xl font-bold mb-6 text-slate-900">
                         Everything you need to <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">build faster</span>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">build faster</span>
                     </motion.h2>
-                    <motion.p variants={fadeInUp} className="text-slate-400 max-w-2xl mx-auto text-lg">
+                    <motion.p variants={fadeInUp} className="text-slate-500 max-w-2xl mx-auto text-lg">
                         CoreBase comes packed with the essential building blocks for modern SaaS applications.
                         Stop reinventing the wheel.
                     </motion.p>
@@ -86,20 +86,20 @@ export function Features() {
                             key={index}
                             variants={scaleIn}
                             whileHover={{ y: -5 }}
-                            className="group relative p-8 rounded-2xl glass-card transition-all duration-300"
+                            className="group relative p-8 rounded-2xl glass-card border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 bg-white"
                         >
                             {/* Hover Gradient Border */}
-                            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
+                            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
 
                             <div className={`w-14 h-14 rounded-xl ${feature.bg} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                                <feature.icon className={`w-7 h-7 ${feature.color}`} />
+                                <feature.icon className={`w-7 h-7 ${feature.color.replace('400', '600')}`} />
                             </div>
 
-                            <h3 className="text-xl font-bold mb-3 text-slate-100 group-hover:text-blue-200 transition-colors">
+                            <h3 className="text-xl font-bold mb-3 text-slate-900 group-hover:text-blue-600 transition-colors">
                                 {feature.title}
                             </h3>
 
-                            <p className="text-slate-400 leading-relaxed text-sm">
+                            <p className="text-slate-500 leading-relaxed text-sm">
                                 {feature.description}
                             </p>
                         </motion.div>

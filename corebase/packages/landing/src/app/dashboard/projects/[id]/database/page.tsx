@@ -6,13 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Plus, Database, Table as TableIcon, Trash2, ArrowRight, Loader2, MoreVertical, Search, Filter, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { CreateTableDialog } from "@/components/dashboard/CreateTableDialog";
 
 interface Table {
     id: string;
-    table_name: string;
-    schema_definition: any;
-    created_at: string;
-    row_count?: number; // Optional metadata
+    tableName: string;
+    schema_definition?: any;
+    schema?: any;
+    created_at?: string;
+    createdAt?: string;
+    row_count?: number;
 }
 
 export default function ProjectDatabasePage() {
@@ -49,41 +52,6 @@ export default function ProjectDatabasePage() {
         if (projectId) fetchTables();
     }, [projectId]);
 
-    const handleCreateTable = async () => {
-        const tableName = prompt("Enter Table Name (alphanumeric, e.g., 'users'):");
-        if (!tableName) return;
-
-        const body = {
-            tableName,
-            columns: [
-                { name: "title", type: "text" },
-                { name: "status", type: "text" },
-                { name: "created_at", type: "timestamp" }
-            ]
-        };
-
-        try {
-            const token = localStorage.getItem("token");
-            const res = await fetch(`http://localhost:4000/projects/${projectId}/tables`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify(body)
-            });
-
-            if (res.ok) {
-                fetchTables();
-            } else {
-                const err = await res.json();
-                alert(`Failed to create table: ${err.error || 'Unknown error'}`);
-            }
-        } catch (err) {
-            alert("Error creating table");
-        }
-    };
-
     const handleDeleteTable = async (tableId: string) => {
         if (!confirm(`Are you sure you want to delete this table? This action cannot be undone.`)) return;
 
@@ -99,7 +67,7 @@ export default function ProjectDatabasePage() {
         }
     };
 
-    const filteredTables = tables.filter(t => t.table_name.toLowerCase().includes(searchQuery.toLowerCase()));
+    const filteredTables = tables.filter(t => (t.tableName || "").toLowerCase().includes(searchQuery.toLowerCase()));
 
     return (
         <div className="space-y-6">
@@ -113,9 +81,11 @@ export default function ProjectDatabasePage() {
                     <Button variant="outline" onClick={fetchTables} className="bg-slate-900 border-slate-700 text-slate-300 hover:text-white">
                         <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} /> Sync
                     </Button>
-                    <Button onClick={handleCreateTable} className="bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-900/20">
-                        <Plus className="w-4 h-4 mr-2" /> New Table
-                    </Button>
+                    <CreateTableDialog projectId={projectId} onSuccess={fetchTables}>
+                        <Button className="bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-900/20">
+                            <Plus className="w-4 h-4 mr-2" /> New Table
+                        </Button>
+                    </CreateTableDialog>
                 </div>
             </div>
 
@@ -157,9 +127,15 @@ export default function ProjectDatabasePage() {
                     <p className="text-slate-500 mb-8 max-w-sm">
                         {searchQuery ? "Try verifying your search query." : "Create your first table to start defining your data schema."}
                     </p>
-                    <Button onClick={handleCreateTable} variant={searchQuery ? "outline" : "default"}>
-                        {searchQuery ? "Clear Search" : "Create Table"}
-                    </Button>
+                    {searchQuery ? (
+                        <Button onClick={() => setSearchQuery("")} variant="outline">
+                            Clear Search
+                        </Button>
+                    ) : (
+                        <CreateTableDialog projectId={projectId} onSuccess={fetchTables}>
+                            <Button>Create Table</Button>
+                        </CreateTableDialog>
+                    )}
                 </motion.div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -180,7 +156,7 @@ export default function ProjectDatabasePage() {
                                             <TableIcon className="w-5 h-5" />
                                         </div>
                                         <div>
-                                            <h3 className="font-bold text-lg text-slate-100">{table.table_name}</h3>
+                                            <h3 className="font-bold text-lg text-slate-100">{table.tableName}</h3>
                                             <div className="text-xs text-slate-500 font-mono">ID: {table.id.slice(0, 8)}</div>
                                         </div>
                                     </div>
@@ -202,11 +178,11 @@ export default function ProjectDatabasePage() {
                                     </div>
                                     <div className="flex justify-between text-sm">
                                         <span className="text-slate-500">Created</span>
-                                        <span className="text-slate-300">{new Date(table.created_at).toLocaleDateString()}</span>
+                                        <span className="text-slate-300">{new Date(table.createdAt || table.created_at || new Date()).toLocaleDateString()}</span>
                                     </div>
                                 </div>
 
-                                <Link href={`/dashboard/projects/${projectId}/database/${table.table_name}`}>
+                                <Link href={`/dashboard/projects/${projectId}/database/${table.tableName}`}>
                                     <Button className="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700">
                                         View Data <ArrowRight className="ml-2 w-4 h-4" />
                                     </Button>

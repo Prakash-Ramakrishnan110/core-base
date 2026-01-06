@@ -1,4 +1,4 @@
-import './bootstrap'; // Must be first
+import './bootstrap'; // Must be first (Restart Triggered)
 import path from 'path';
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
@@ -44,6 +44,7 @@ async function registerRoutes() {
     const { apiKeysRoutes } = await import('./modules/api-keys/api-keys.routes');
     const { tablesRoutes } = await import('./modules/tables/tables.routes');
     const { auditRoutes } = await import('./modules/audit/audit.routes');
+    const { aiRoutes } = await import('./modules/ai/ai.routes');
 
     // Auth routes
     await app.register(authRoutes, { prefix: '/auth' });
@@ -59,6 +60,9 @@ async function registerRoutes() {
 
     // Audit routes (protected)
     await app.register(auditRoutes);
+
+    // AI routes (protected)
+    await app.register(aiRoutes, { prefix: '/ai' });
 
     // Users routes (Admin/Protected)
     const { usersRoutes } = await import('./modules/users/users.routes');

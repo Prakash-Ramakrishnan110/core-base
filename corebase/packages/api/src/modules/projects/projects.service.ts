@@ -1,5 +1,7 @@
 import { query } from '../../database/query';
 import { auditService } from '../audit/audit.service';
+import { randomBytes } from 'crypto';
+import jwt from 'jsonwebtoken';
 
 export interface CreateProjectInput {
     name: string;
@@ -18,6 +20,10 @@ export interface ProjectResponse {
     description: string | null;
     createdAt: Date;
     updatedAt: Date;
+    // Computed Keys (Supabase-style)
+    jwtSecret?: string;
+    anonKey?: string;
+    serviceKey?: string;
 }
 
 export class ProjectsService {
@@ -27,11 +33,14 @@ export class ProjectsService {
     async createProject(userId: string, input: CreateProjectInput): Promise<ProjectResponse> {
         const { name, description } = input;
 
+        // Generate JWT Secret
+        const jwtSecret = randomBytes(32).toString('hex');
+
         const result = await query(
-            `INSERT INTO projects (owner_id, name, description)
-             VALUES ($1, $2, $3)
-             RETURNING id, owner_id, name, description, created_at, updated_at`,
-            [userId, name, description || null]
+            `INSERT INTO projects (owner_id, name, description, jwt_secret)
+             VALUES ($1, $2, $3, $4)
+             RETURNING id, owner_id, name, description, jwt_secret, created_at, updated_at`,
+            [userId, name, description || null, jwtSecret]
         );
 
         const project = result.rows[0];
@@ -46,6 +55,8 @@ export class ProjectsService {
             metadata: { name: project.name }
         });
 
+        const keys = this.generateKeys(project.jwt_secret);
+
         return {
             id: project.id,
             userId: project.owner_id,
@@ -53,6 +64,8 @@ export class ProjectsService {
             description: project.description,
             createdAt: project.created_at,
             updatedAt: project.updated_at,
+            jwtSecret: project.jwt_secret,
+            ...keys
         };
     }
 
@@ -83,7 +96,7 @@ export class ProjectsService {
      */
     async getProjectById(projectId: string, userId: string): Promise<ProjectResponse | null> {
         const result = await query(
-            `SELECT id, owner_id, name, description, created_at, updated_at
+            `SELECT id, owner_id, name, description, jwt_secret, created_at, updated_at
              FROM projects
              WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL`,
             [projectId, userId]
@@ -94,6 +107,10 @@ export class ProjectsService {
         }
 
         const project = result.rows[0];
+        let keys = {};
+        if (project.jwt_secret) {
+            keys = this.generateKeys(project.jwt_secret);
+        }
 
         return {
             id: project.id,
@@ -102,6 +119,8 @@ export class ProjectsService {
             description: project.description,
             createdAt: project.created_at,
             updatedAt: project.updated_at,
+            jwtSecret: project.jwt_secret,
+            ...keys
         };
     }
 
@@ -131,7 +150,6 @@ export class ProjectsService {
         }
 
         if (updates.length === 0) {
-            // No updates provided, just return current project
             return this.getProjectById(projectId, userId);
         }
 
@@ -142,7 +160,7 @@ export class ProjectsService {
             `UPDATE projects
              SET ${updates.join(', ')}
              WHERE id = $${paramCount++} AND owner_id = $${paramCount++} AND deleted_at IS NULL
-             RETURNING id, owner_id, name, description, created_at, updated_at`,
+             RETURNING id, owner_id, name, description, jwt_secret, created_at, updated_at`,
             values
         );
 
@@ -151,6 +169,10 @@ export class ProjectsService {
         }
 
         const project = result.rows[0];
+        let keys = {};
+        if (project.jwt_secret) {
+            keys = this.generateKeys(project.jwt_secret);
+        }
 
         return {
             id: project.id,
@@ -159,7 +181,18 @@ export class ProjectsService {
             description: project.description,
             createdAt: project.created_at,
             updatedAt: project.updated_at,
+            jwtSecret: project.jwt_secret,
+            ...keys
         };
+    }
+
+    /**
+     * Helper to generate keys from secret
+     */
+    private generateKeys(secret: string) {
+        const anonKey = jwt.sign({ role: 'anon', iss: 'corebase' }, secret);
+        const serviceKey = jwt.sign({ role: 'service_role', iss: 'corebase' }, secret);
+        return { anonKey, serviceKey };
     }
 
     /**

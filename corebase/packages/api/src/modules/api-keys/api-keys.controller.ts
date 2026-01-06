@@ -39,7 +39,14 @@ export class ApiKeysController {
         }
 
         const keys = await apiKeysService.listKeys(projectId);
-        return reply.send({ keys });
+        return reply.send({
+            keys,
+            defaultKeys: {
+                anon: project.anonKey,
+                service: project.serviceKey,
+                jwtSecret: project.jwtSecret
+            }
+        });
     }
 
     async revokeKey(request: FastifyRequest, reply: FastifyReply) {
